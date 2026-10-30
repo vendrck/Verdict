@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: proofpay
+      POSTGRES_PASSWORD: proofpay
+      POSTGRES_DB: proofpay
+    ports:
+      # Localhost only: the dev password is weak, so don't expose it to the network.
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

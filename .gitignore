@@ -1,0 +1,19 @@
+node_modules/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# secrets
+.env
+.env.*
+!.env.example
+
+# local
+.DS_Store
+*.log
+
+# moved-aside files (see TRASH-FILES.md)
+TRASH/
+TRASH-FILES.md

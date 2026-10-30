@@ -1,0 +1,46 @@
+# Render Blueprint: one web service + one Postgres. Deploy via Dashboard → New → Blueprint.
+# Secrets are marked `sync: false`: Render asks for them on the first deploy and never reads them from git.
+services:
+  - type: web
+    name: proofpay
+    runtime: node
+    plan: starter # always on, so PayPal webhooks aren't lost to a sleeping free instance
+    region: oregon
+    buildCommand: npm ci && npm run build
+    preDeployCommand: npm run db:migrate
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: proofpay-db
+          property: connectionString
+      - key: PAYPAL_ENV
+        value: sandbox
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      # Fill in after registering the webhook URL (…/api/webhooks/paypal) with PayPal.
+      - key: PAYPAL_WEBHOOK_ID
+        sync: false
+      - key: AI_PROVIDER
+        value: google
+      - key: AI_MODEL
+        sync: false
+      - key: GOOGLE_GENERATIVE_AI_API_KEY
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      # APP_BASE_URL is optional here: it falls back to Render's RENDER_EXTERNAL_URL.
+
+databases:
+  - name: proofpay-db
+    plan: basic-256mb # the free plan is deleted after 30 days, likely before judging ends
+    region: oregon
+    databaseName: proofpay
+    user: proofpay
